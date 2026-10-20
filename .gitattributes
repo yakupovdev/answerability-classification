@@ -1,0 +1,10 @@
+# Normalize maintained source and documentation; preserve historical artifact bytes.
+* text=auto
+*.py text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.jsonl text eol=lf
+*.txt text eol=lf
+.gitignore text eol=lf
+.gitattributes text eol=lf
+outputs/** -text whitespace=trailing-space,space-before-tab,cr-at-eol

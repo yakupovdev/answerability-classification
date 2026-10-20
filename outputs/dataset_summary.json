@@ -1,0 +1,113 @@
+{
+  "source_id": "rajpurkar/squad_v2",
+  "dataset_path": "C:\\Projects\\rmt\\data\\raw\\squad_v2",
+  "started_at_utc": "2026-10-20T15:43:55.958143Z",
+  "downloaded_at_utc": "2026-10-20T15:43:49.837909Z",
+  "loaded_at_utc": "2026-10-20T15:43:56.840724Z",
+  "checked_at_utc": "2026-10-20T15:43:59.205701Z",
+  "load_mode": "local",
+  "environment": {
+    "os": "Windows-11-10.0.26200-SP0",
+    "python_version": "3.12.2",
+    "python_executable": "C:\\Projects\\rmt\\.venv\\Scripts\\python.exe",
+    "datasets_version": "5.1.0",
+    "python_inventory": {
+      "available": [
+        {
+          "executable": "C:\\Projects\\rmt\\.venv\\Scripts\\python.exe",
+          "version": "3.12.2"
+        },
+        {
+          "executable": "C:\\Users\\PC_SLAVA\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\python\\python.exe",
+          "version": "3.12.14"
+        },
+        {
+          "executable": "C:\\Users\\PC_SLAVA\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+          "version": "3.12.2"
+        }
+      ],
+      "skipped_or_unavailable": [
+        {
+          "executable": "C:\\Users\\PC_SLAVA\\AppData\\Local\\Microsoft\\WindowsApps\\python.EXE",
+          "reason": "Windows Store alias"
+        },
+        {
+          "executable": "C:\\Users\\PC_SLAVA\\AppData\\Local\\Microsoft\\WindowsApps\\python3.EXE",
+          "reason": "Windows Store alias"
+        }
+      ],
+      "scope": "Current interpreter, base interpreter, PATH and common local installation paths; not a full disk scan."
+    }
+  },
+  "answerable_definition": "len(answers['text']) > 0",
+  "empty_text_definition": "not text.strip(); original text is preserved",
+  "splits": {
+    "train": {
+      "rows": 130319,
+      "columns": [
+        "id",
+        "title",
+        "context",
+        "question",
+        "answers"
+      ],
+      "answerable": 86821,
+      "unanswerable": 43498,
+      "empty_context": 0,
+      "empty_question": 0,
+      "unique_ids": 130319,
+      "duplicate_id_values": 0,
+      "duplicate_id_extra_rows": 0,
+      "fingerprint": "23f88e6715ad06e4"
+    },
+    "validation": {
+      "rows": 11873,
+      "columns": [
+        "id",
+        "title",
+        "context",
+        "question",
+        "answers"
+      ],
+      "answerable": 5928,
+      "unanswerable": 5945,
+      "empty_context": 0,
+      "empty_question": 0,
+      "unique_ids": 11873,
+      "duplicate_id_values": 0,
+      "duplicate_id_extra_rows": 0,
+      "fingerprint": "429b743d37b5caf6"
+    }
+  },
+  "id_intersections": [
+    {
+      "splits": [
+        "train",
+        "validation"
+      ],
+      "shared_id_count": 0
+    }
+  ],
+  "save_load_roundtrip": {
+    "performed": false,
+    "reason": "Existing local DatasetDict loaded directly."
+  },
+  "initial_save_load_roundtrip": {
+    "performed": true,
+    "passed": true,
+    "splits": {
+      "train": {
+        "same_rows": true,
+        "same_columns": true,
+        "same_features": true,
+        "same_arrow_data": true
+      },
+      "validation": {
+        "same_rows": true,
+        "same_columns": true,
+        "same_features": true,
+        "same_arrow_data": true
+      }
+    }
+  }
+}
