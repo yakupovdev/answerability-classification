@@ -1,0 +1,22 @@
+{
+  "files_sha256": {
+    "train/data-00000-of-00001.arrow": "86c798d65a5d9aed5cac5efa4391fe3e7ff8045d590c3052534fb43dd487d34d",
+    "train/dataset_info.json": "ffb6926b4d82252d3c8f08df87766bf4597c993c505c32956c17e4420677ee71",
+    "train/state.json": "856a9d1650b11d9b5f05d9559762efc7299b22a82ff957acf93ee688aa9aec97",
+    "validation/data-00000-of-00001.arrow": "ab16ffc9bed05e9e9aa29d348354293b605f038dd6cfa38cc72d349a17b995b0",
+    "validation/dataset_info.json": "ffb6926b4d82252d3c8f08df87766bf4597c993c505c32956c17e4420677ee71",
+    "validation/state.json": "6412fa565f1ddf7ef0caf1ddb346c7706dfd8534bc8d5a8165b0f52337e45788"
+  },
+  "rows": {
+    "train": 117256,
+    "validation": 13063
+  },
+  "model_revision": "12040accade4e8a0f71eabdb258fecc2e7e948be",
+  "max_length": 512,
+  "input_fields": [
+    "question",
+    "context"
+  ],
+  "label_only_for_supervision": true,
+  "test_accessed": false
+}

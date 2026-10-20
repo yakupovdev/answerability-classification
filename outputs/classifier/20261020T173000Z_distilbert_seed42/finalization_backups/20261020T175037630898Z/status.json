@@ -1,0 +1,7 @@
+{
+  "status": "failed",
+  "error": "ValueError: Saved/reloaded model logits failed numerical equivalence.",
+  "traceback": "Traceback (most recent call last):\n  File \"C:\\Projects\\rmt\\scripts\\train_classifier.py\", line 490, in main\n    predicted = (probability >= 0.5).astype(np.int64)\n  File \"C:\\Projects\\rmt\\scripts\\train_classifier.py\", line 64, in require\n    if not condition:\n        ^^^^^^^^^^^^^^\nValueError: Saved/reloaded model logits failed numerical equivalence.\n",
+  "duration_seconds": 1302.4926406999875,
+  "test_accessed": false
+}

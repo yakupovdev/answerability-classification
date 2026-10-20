@@ -1,0 +1,24 @@
+{
+  "status": "completed",
+  "stage": "smoke",
+  "smoke_is_not_final_metrics": true,
+  "duration_seconds": 1.9352571000054013,
+  "completed_epochs": 0.5,
+  "global_steps": 8,
+  "best_checkpoint": "C:\\Projects\\rmt\\outputs\\classifier\\20261020T173000Z_distilbert_seed42\\smoke\\attempt_1\\checkpoints\\checkpoint-8",
+  "best_validation_macro_f1": 0.41284403669724773,
+  "train_batch_size": 8,
+  "gradient_accumulation_steps": 2,
+  "effective_batch_size": 16,
+  "precision": "bf16",
+  "peak_cuda_allocated_bytes": 1789931520,
+  "oom_restarts": [],
+  "training_metrics": {
+    "train_runtime": 1.525,
+    "train_samples_per_second": 83.934,
+    "train_steps_per_second": 5.246,
+    "train_loss": 0.675140380859375,
+    "epoch": 0.5
+  },
+  "initialization": "Fresh base checkpoint and seed; never smoke weights or previous attempt weights."
+}

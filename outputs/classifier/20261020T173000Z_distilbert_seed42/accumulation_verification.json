@@ -1,0 +1,13 @@
+{
+  "passed": true,
+  "split": "train",
+  "rows": 4,
+  "mode": "float32 eval (dropout disabled) with autograd",
+  "loss": 0.7290229797363281,
+  "mean_microbatch_loss": 0.7290229201316833,
+  "max_abs_classifier_gradient_difference": 1.564621925354004e-07,
+  "atol": 1e-05,
+  "rtol": 0.001,
+  "trainer_model_accepts_loss_kwargs": false,
+  "normalization": "Per-microbatch mean CE divided by current gradient accumulation steps by Trainer."
+}

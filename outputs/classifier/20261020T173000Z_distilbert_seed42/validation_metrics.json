@@ -1,0 +1,78 @@
+{
+  "model": {
+    "threshold": 0.5,
+    "class_order": [
+      0,
+      1
+    ],
+    "accuracy": 0.8320447064227207,
+    "balanced_accuracy": 0.79127207986072,
+    "macro_f1": 0.803065635502684,
+    "roc_auc": 0.9075037591260711,
+    "per_class": {
+      "0": {
+        "precision": 0.8004919376878928,
+        "recall": 0.6667425449578875,
+        "f1-score": 0.7275211127670144,
+        "support": 4393.0
+      },
+      "1": {
+        "precision": 0.8443215652913654,
+        "recall": 0.9158016147635525,
+        "f1-score": 0.8786101582383534,
+        "support": 8670.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        2929,
+        1464
+      ],
+      [
+        730,
+        7940
+      ]
+    ],
+    "confusion_matrix_axes": "rows=true, columns=predicted; order [0=unanswerable, 1=answerable]"
+  },
+  "always_answerable": {
+    "threshold": 0.5,
+    "class_order": [
+      0,
+      1
+    ],
+    "accuracy": 0.6637066523769425,
+    "balanced_accuracy": 0.5,
+    "macro_f1": 0.39893249896470806,
+    "roc_auc": 0.5,
+    "per_class": {
+      "0": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1-score": 0.0,
+        "support": 4393.0
+      },
+      "1": {
+        "precision": 0.6637066523769425,
+        "recall": 1.0,
+        "f1-score": 0.7978649979294161,
+        "support": 8670.0
+      }
+    },
+    "confusion_matrix": [
+      [
+        0,
+        4393
+      ],
+      [
+        0,
+        8670
+      ]
+    ],
+    "confusion_matrix_axes": "rows=true, columns=predicted; order [0=unanswerable, 1=answerable]"
+  },
+  "evaluation_split": "validation",
+  "checkpoint_selection_split": "validation",
+  "test_accessed": false,
+  "interpretation": "Development metrics of the classifier only, not independent final evaluation or a test of H1/H2."
+}

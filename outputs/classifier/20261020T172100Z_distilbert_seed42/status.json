@@ -1,0 +1,7 @@
+{
+  "status": "failed",
+  "error": "ValueError: Unexpected model input columns.",
+  "traceback": "Traceback (most recent call last):\n  File \"C:\\Projects\\rmt\\scripts\\train_classifier.py\", line 391, in main\n    train, diagnostics[\"train\"] = tokenize_and_diagnose(raw_train, tokenizer, config, \"train\")\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Projects\\rmt\\scripts\\train_classifier.py\", line 195, in tokenize_and_diagnose\n    require(set(model_inputs) == {\"input_ids\", \"attention_mask\", \"labels\"}, \"Unexpected model input columns.\")\n  File \"C:\\Projects\\rmt\\scripts\\train_classifier.py\", line 63, in require\n    raise ValueError(message)\nValueError: Unexpected model input columns.\n",
+  "duration_seconds": 14.502329000009922,
+  "test_accessed": false
+}

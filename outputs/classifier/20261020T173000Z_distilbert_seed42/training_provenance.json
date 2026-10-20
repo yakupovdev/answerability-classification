@@ -1,0 +1,123 @@
+{
+  "run_id": "20261020T173000Z_distilbert_seed42",
+  "run_directory": "C:\\Projects\\rmt\\outputs\\classifier\\20261020T173000Z_distilbert_seed42",
+  "checkpoint": {
+    "model_id": "distilbert/distilbert-base-uncased",
+    "model_revision": "12040accade4e8a0f71eabdb258fecc2e7e948be",
+    "tokenizer_revision": "12040accade4e8a0f71eabdb258fecc2e7e948be",
+    "snapshot_path": "C:\\Projects\\rmt\\.cache\\huggingface\\hub\\models--distilbert--distilbert-base-uncased\\snapshots\\12040accade4e8a0f71eabdb258fecc2e7e948be"
+  },
+  "config": {
+    "model_id": "distilbert/distilbert-base-uncased",
+    "revision": "12040accade4e8a0f71eabdb258fecc2e7e948be",
+    "seed": 42,
+    "epochs": 2,
+    "learning_rate": 2e-05,
+    "weight_decay": 0.01,
+    "warmup_ratio": 0.1,
+    "train_batch_size": 8,
+    "gradient_accumulation_steps": 2,
+    "eval_batch_size": 8,
+    "max_length": 512,
+    "dataloader_num_workers": 0,
+    "logging_steps": 25,
+    "smoke_steps": 8,
+    "smoke_train_rows": 256,
+    "smoke_validation_rows": 128
+  },
+  "actual_training": {
+    "status": "completed",
+    "stage": "full",
+    "smoke_is_not_final_metrics": false,
+    "duration_seconds": 1220.965817999997,
+    "completed_epochs": 2.0,
+    "global_steps": 14658,
+    "best_checkpoint": "C:\\Projects\\rmt\\outputs\\classifier\\20261020T173000Z_distilbert_seed42\\full\\attempt_1\\checkpoints\\checkpoint-14658",
+    "best_validation_macro_f1": 0.803065635502684,
+    "train_batch_size": 8,
+    "gradient_accumulation_steps": 2,
+    "effective_batch_size": 16,
+    "precision": "bf16",
+    "peak_cuda_allocated_bytes": 2107343360,
+    "oom_restarts": [],
+    "training_metrics": {
+      "train_runtime": 1220.51,
+      "train_samples_per_second": 192.143,
+      "train_steps_per_second": 12.01,
+      "train_loss": 0.3740839210632049,
+      "epoch": 2.0
+    },
+    "initialization": "Fresh base checkpoint and seed; never smoke weights or previous attempt weights."
+  },
+  "versions": {
+    "torch": "2.11.0+cu128",
+    "transformers": "5.20.2",
+    "accelerate": "1.15.0",
+    "scikit-learn": "1.9.1",
+    "datasets": "5.1.0",
+    "numpy": "2.5.4",
+    "tokenizers": "0.23.3",
+    "huggingface-hub": "2.2.0",
+    "python": "3.12.2"
+  },
+  "gpu": {
+    "torch_version": "2.11.0+cu128",
+    "torch_version_cuda": "12.8",
+    "cuda_is_available": true,
+    "name": "NVIDIA GeForce RTX 5060",
+    "compute_capability": [
+      12,
+      0
+    ],
+    "memory_total_bytes": 8546484224,
+    "supported_architectures": [
+      "sm_75",
+      "sm_80",
+      "sm_86",
+      "sm_90",
+      "sm_100",
+      "sm_120"
+    ],
+    "nvidia_smi": {
+      "exit_code": 0,
+      "stdout": "NVIDIA GeForce RTX 5060, 610.88, 8151, 6957\n",
+      "stderr": ""
+    },
+    "float32_forward_backward_passed": true,
+    "precision_probes": [
+      {
+        "mode": "bf16",
+        "passed": true
+      }
+    ],
+    "precision": "bf16"
+  },
+  "test_accessed": false,
+  "data_signature": {
+    "files_sha256": {
+      "train/data-00000-of-00001.arrow": "86c798d65a5d9aed5cac5efa4391fe3e7ff8045d590c3052534fb43dd487d34d",
+      "train/dataset_info.json": "ffb6926b4d82252d3c8f08df87766bf4597c993c505c32956c17e4420677ee71",
+      "train/state.json": "856a9d1650b11d9b5f05d9559762efc7299b22a82ff957acf93ee688aa9aec97",
+      "validation/data-00000-of-00001.arrow": "ab16ffc9bed05e9e9aa29d348354293b605f038dd6cfa38cc72d349a17b995b0",
+      "validation/dataset_info.json": "ffb6926b4d82252d3c8f08df87766bf4597c993c505c32956c17e4420677ee71",
+      "validation/state.json": "6412fa565f1ddf7ef0caf1ddb346c7706dfd8534bc8d5a8165b0f52337e45788"
+    },
+    "rows": {
+      "train": 117256,
+      "validation": 13063
+    },
+    "model_revision": "12040accade4e8a0f71eabdb258fecc2e7e948be",
+    "max_length": 512,
+    "input_fields": [
+      "question",
+      "context"
+    ],
+    "label_only_for_supervision": true,
+    "test_accessed": false
+  },
+  "source_code_sha256": {
+    "train_classifier.py": "5da1cb1f741d81fd6dd3046e8654316a698d7190f62761c440f259fd547525a7",
+    "train_classifier_finalization.py": "3ef3a1012ae6faf207dc0320ea2441fb578f922fe04cfb55d632e89d31547e08"
+  },
+  "export_note": "Completed weights exported and verified in FP32 without further training; original failed export reports retained under finalization_backups."
+}

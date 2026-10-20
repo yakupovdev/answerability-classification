@@ -1,0 +1,30 @@
+{
+  "train": {
+    "rows": 117256,
+    "context_truncated": 165,
+    "answerable": 78151,
+    "truncated_answerable": 100,
+    "answerable_no_fully_visible_gold_span": 4,
+    "truncated_answerable_no_fully_visible_gold_span": 4,
+    "invalid_gold_spans": 0,
+    "max_original_context_tokens": 853,
+    "context_truncated_fraction": 0.0014071774578699597,
+    "answerable_no_fully_visible_gold_span_fraction": 5.1182966308812425e-05,
+    "truncated_answerable_no_fully_visible_gold_span_fraction": 0.04,
+    "diagnostic_only": "Offsets/answers are excluded from model inputs; prefix context truncation, one sequence per example, labels unchanged."
+  },
+  "validation": {
+    "rows": 13063,
+    "context_truncated": 19,
+    "answerable": 8670,
+    "truncated_answerable": 14,
+    "answerable_no_fully_visible_gold_span": 6,
+    "truncated_answerable_no_fully_visible_gold_span": 6,
+    "invalid_gold_spans": 0,
+    "max_original_context_tokens": 767,
+    "context_truncated_fraction": 0.001454489780295491,
+    "answerable_no_fully_visible_gold_span_fraction": 0.0006920415224913495,
+    "truncated_answerable_no_fully_visible_gold_span_fraction": 0.42857142857142855,
+    "diagnostic_only": "Offsets/answers are excluded from model inputs; prefix context truncation, one sequence per example, labels unchanged."
+  }
+}

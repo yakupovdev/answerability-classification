@@ -1,0 +1,96 @@
+{
+  "split": "validation",
+  "selection": "First up to five errors of each type in saved validation order",
+  "errors": [
+    {
+      "id": "5a8d9051df8bba001a0f9b01",
+      "context": "The artificial intelligence (AI) of enemies in Twilight Princess is more advanced than that of enemies in The Wind Waker. Enemies react to defeated companions and to arrows or slingshot pellets that pass by, and can detect Link from a greater distance than was possible in previous games.",
+      "question": "What is a game whose enemies have more rudimentary programming than those in Twilight Enemies?",
+      "label": 0,
+      "p_answerable": 0.8333245953120233,
+      "predicted_label": 1,
+      "error_type": "false_answerable"
+    },
+    {
+      "id": "5a8d9051df8bba001a0f9b03",
+      "context": "The artificial intelligence (AI) of enemies in Twilight Princess is more advanced than that of enemies in The Wind Waker. Enemies react to defeated companions and to arrows or slingshot pellets that pass by, and can detect Link from a greater distance than was possible in previous games.",
+      "question": "What feature of the enemies in Twilight Enemies is more advanced?",
+      "label": 0,
+      "p_answerable": 0.9477691428985743,
+      "predicted_label": 1,
+      "error_type": "false_answerable"
+    },
+    {
+      "id": "5a8d9051df8bba001a0f9b04",
+      "context": "The artificial intelligence (AI) of enemies in Twilight Princess is more advanced than that of enemies in The Wind Waker. Enemies react to defeated companions and to arrows or slingshot pellets that pass by, and can detect Link from a greater distance than was possible in previous games.",
+      "question": "Who can enemies detect from a greater distance than in Twilight Enemies?",
+      "label": 0,
+      "p_answerable": 0.7479843044691752,
+      "predicted_label": 1,
+      "error_type": "false_answerable"
+    },
+    {
+      "id": "5a8da6c7df8bba001a0f9b3d",
+      "context": "In 2003, Nintendo announced that a new The Legend of Zelda game was in the works for the GameCube by the same team that had created the cel-shaded The Wind Waker. At the following year's Game Developers Conference, director Eiji Aonuma unintentionally revealed that the game's sequel was in development under the working title The Wind Waker 2; it was set to use a similar graphical style to that of its predecessor. Nintendo of America told Aonuma that North American sales of The Wind Waker were sluggish because its cartoon appearance created the impression that the game was designed for a young audience. Concerned that the sequel would have the same problem, Aonuma expressed to producer Shigeru Miyamoto that he wanted to create a realistic Zelda game that would appeal to the North American market. Miyamoto, hesitant about solely changing the game's presentation, suggested the team's focus should instead be on coming up with gameplay innovations. He advised that Aonuma should start by doing what could not be done in Ocarina of Time, particularly horseback combat.[l]",
+      "question": "In what year did Nintendo reveal the start of development on what would become The Wind Waker?",
+      "label": 0,
+      "p_answerable": 0.7789857587902472,
+      "predicted_label": 1,
+      "error_type": "false_answerable"
+    },
+    {
+      "id": "5ad23f8fd7d075001a4288f5",
+      "context": "Whilst filming in Mexico City, speculation in the media claimed that the script had been altered to accommodate the demands of Mexican authorities—reportedly influencing details of the scene and characters, casting choices, and modifying the script in order to portray the country in a \"positive light\"—in order to secure tax concessions and financial support worth up to $20 million for the film. This was denied by producer Michael G. Wilson, who stated that the scene had always been intended to be shot in Mexico as production had been attracted to the imagery of the Day of the Dead, and that the script had been developed from there. Production of Skyfall had previously faced similar problems while attempting to secure permits to shoot the film's pre-title sequence in India before moving to Istanbul.",
+      "question": "The film received tax support over what amount?",
+      "label": 0,
+      "p_answerable": 0.600188359260205,
+      "predicted_label": 1,
+      "error_type": "false_answerable"
+    },
+    {
+      "id": "56cd95f562d2951400fa6750",
+      "context": "In 2003, Nintendo announced that a new The Legend of Zelda game was in the works for the GameCube by the same team that had created the cel-shaded The Wind Waker. At the following year's Game Developers Conference, director Eiji Aonuma unintentionally revealed that the game's sequel was in development under the working title The Wind Waker 2; it was set to use a similar graphical style to that of its predecessor. Nintendo of America told Aonuma that North American sales of The Wind Waker were sluggish because its cartoon appearance created the impression that the game was designed for a young audience. Concerned that the sequel would have the same problem, Aonuma expressed to producer Shigeru Miyamoto that he wanted to create a realistic Zelda game that would appeal to the North American market. Miyamoto, hesitant about solely changing the game's presentation, suggested the team's focus should instead be on coming up with gameplay innovations. He advised that Aonuma should start by doing what could not be done in Ocarina of Time, particularly horseback combat.[l]",
+      "question": "In what year did Nintendo reveal the start of development on what would become Twilight Princess?",
+      "label": 1,
+      "p_answerable": 0.38121956625614994,
+      "predicted_label": 0,
+      "error_type": "false_unanswerable"
+    },
+    {
+      "id": "56cd95f562d2951400fa6753",
+      "context": "In 2003, Nintendo announced that a new The Legend of Zelda game was in the works for the GameCube by the same team that had created the cel-shaded The Wind Waker. At the following year's Game Developers Conference, director Eiji Aonuma unintentionally revealed that the game's sequel was in development under the working title The Wind Waker 2; it was set to use a similar graphical style to that of its predecessor. Nintendo of America told Aonuma that North American sales of The Wind Waker were sluggish because its cartoon appearance created the impression that the game was designed for a young audience. Concerned that the sequel would have the same problem, Aonuma expressed to producer Shigeru Miyamoto that he wanted to create a realistic Zelda game that would appeal to the North American market. Miyamoto, hesitant about solely changing the game's presentation, suggested the team's focus should instead be on coming up with gameplay innovations. He advised that Aonuma should start by doing what could not be done in Ocarina of Time, particularly horseback combat.[l]",
+      "question": "What was one feature that could not be implemented in Ocarina of Time?",
+      "label": 1,
+      "p_answerable": 0.42584398273302004,
+      "predicted_label": 0,
+      "error_type": "false_unanswerable"
+    },
+    {
+      "id": "56d12ceb17492d1400aabb5f",
+      "context": "In 2003, Nintendo announced that a new The Legend of Zelda game was in the works for the GameCube by the same team that had created the cel-shaded The Wind Waker. At the following year's Game Developers Conference, director Eiji Aonuma unintentionally revealed that the game's sequel was in development under the working title The Wind Waker 2; it was set to use a similar graphical style to that of its predecessor. Nintendo of America told Aonuma that North American sales of The Wind Waker were sluggish because its cartoon appearance created the impression that the game was designed for a young audience. Concerned that the sequel would have the same problem, Aonuma expressed to producer Shigeru Miyamoto that he wanted to create a realistic Zelda game that would appeal to the North American market. Miyamoto, hesitant about solely changing the game's presentation, suggested the team's focus should instead be on coming up with gameplay innovations. He advised that Aonuma should start by doing what could not be done in Ocarina of Time, particularly horseback combat.[l]",
+      "question": "What was the specific area of gameplay that had not been done in Ocarina of Time?",
+      "label": 1,
+      "p_answerable": 0.1480471980316895,
+      "predicted_label": 0,
+      "error_type": "false_unanswerable"
+    },
+    {
+      "id": "56cd976762d2951400fa6761",
+      "context": "Prior Zelda games have employed a theme of two separate, yet connected, worlds. In A Link to the Past, Link travels between a \"Light World\" and a \"Dark World\"; in Ocarina of Time, as well as in Oracle of Ages, Link travels between two different time periods. The Zelda team sought to reuse this motif in the series' latest installment. It was suggested that Link transform into a wolf, much like he metamorphoses into a rabbit in the Dark World of A Link to the Past.[m] The story of the game was created by Aonuma, and later underwent several changes by scenario writers Mitsuhiro Takano and Aya Kyogoku. Takano created the script for the story scenes, while Kyogoku and Takayuki Ikkaku handled the actual in-game script. Aonuma left his team working on the new idea while he directed The Minish Cap for the Game Boy Advance. When he returned, he found the Twilight Princess team struggling. Emphasis on the parallel worlds and the wolf transformation had made Link's character unbelievable. Aonuma also felt the gameplay lacked the caliber of innovation found in Phantom Hourglass, which was being developed with touch controls for the Nintendo DS. At the same time, the Wii was under development with the code name \"Revolution\". Miyamoto thought that the Revolution's pointing device, the Wii Remote, was well suited for aiming arrows in Zelda, and suggested that Aonuma consider using it.[n]",
+      "question": "What does Link morph into in A Link to the Past?",
+      "label": 1,
+      "p_answerable": 0.30985842672988845,
+      "predicted_label": 0,
+      "error_type": "false_unanswerable"
+    },
+    {
+      "id": "56cdd05a62d2951400fa688d",
+      "context": "Bond travels to Austria to find White, who is dying of thallium poisoning. He admits to growing disenchanted with Quantum and tells Bond to find and protect his daughter, Dr. Madeline Swann, who will take him to L'Américain; this will in turn lead him to Spectre. White then commits suicide. Bond locates Swann at the Hoffler Klinik, but she is abducted by Hinx. Bond rescues her and the two meet Q, who discovers that Sciarra's ring links Oberhauser to Bond's previous missions, identifying Le Chiffre, Dominic Greene and Raoul Silva as Spectre agents. Swann reveals that L'Américain is a hotel in Tangier.",
+      "question": "Where does JAmes find Dr. Swann?",
+      "label": 1,
+      "p_answerable": 0.10557884359159042,
+      "predicted_label": 0,
+      "error_type": "false_unanswerable"
+    }
+  ]
+}
