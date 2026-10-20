@@ -1,0 +1,194 @@
+{
+  "identity": {
+    "source": {
+      "source_id": "rajpurkar/squad_v2",
+      "raw_file_sha256": {
+        "dataset_dict.json": "88b5b05fc757e76e7edc779db90e96cb6d76538b93165d6ce962a818801babf4",
+        "train/data-00000-of-00001.arrow": "44ab3668e9dd2c3923099117731c79652d6bac7ad177f237651db49088b7e341",
+        "train/dataset_info.json": "5b60821ad4801b31a1d0244545b3f53ab792a5f6385c95e66c562baa472c6800",
+        "train/state.json": "c19050f42232fc0cd07ca6c58cf77004cde4e98715e179dcc11061f174ab88ac",
+        "validation/data-00000-of-00001.arrow": "c7b31634d730c50f9c7910d0152d6d09a1cbdb57d807f73523673dbc06b51586",
+        "validation/dataset_info.json": "5b60821ad4801b31a1d0244545b3f53ab792a5f6385c95e66c562baa472c6800",
+        "validation/state.json": "f7ed4cd3c4ee61c34fd79abe1f385866903e68258b110e1c06034bfb4a1294a5"
+      },
+      "splits": {
+        "train": {
+          "rows": 130319,
+          "columns": [
+            "id",
+            "title",
+            "context",
+            "question",
+            "answers"
+          ],
+          "fingerprint": "23f88e6715ad06e4"
+        },
+        "validation": {
+          "rows": 11873,
+          "columns": [
+            "id",
+            "title",
+            "context",
+            "question",
+            "answers"
+          ],
+          "fingerprint": "429b743d37b5caf6"
+        }
+      }
+    },
+    "settings": {
+      "algorithm_version": 1,
+      "seed": 42,
+      "label": "1 if len(answers['text']) > 0 else 0",
+      "context_group": "SHA-256(UTF-8(' '.join(NFC(context).split())))",
+      "unicode_version": "15.0.0",
+      "overlap_policy": "Remove all raw train rows whose group occurs anywhere in raw validation.",
+      "validation_group_fraction": 0.1,
+      "group_split": "Sort remaining groups lexicographically; shuffle using random.Random(42). Take the first max(1, min(n-1, int(n*0.1+0.5))) groups for validation; all others for train. Preserve original row order within each split.",
+      "test_per_class": 500,
+      "test_sampling": "Use a separate random.Random(42). Sample 500 indices without replacement from label=1, then 500 from label=0, in raw validation row order; shuffle the combined indices using that same test RNG.",
+      "manifest_checksum": "SHA-256 of UTF-8 JSON ID array, ensure_ascii=False, separators=(',', ':'); no newline",
+      "classifier_input_fields": [
+        "question",
+        "context"
+      ]
+    },
+    "versions": {
+      "python": "3.12.2",
+      "datasets": "5.1.0",
+      "pyarrow": "26.0.0"
+    }
+  },
+  "created_at_utc": "2026-10-20T17:00:40.288272Z",
+  "checked_at_utc": "2026-10-20T17:01:21.251364Z",
+  "run_mode": "reuse",
+  "python_executable": "C:\\Projects\\rmt\\.venv\\Scripts\\python.exe",
+  "allocation": {
+    "raw_context_group_overlap": 0,
+    "excluded_train_groups": 0,
+    "excluded_train_rows": 0,
+    "remaining_raw_train_rows": 130319,
+    "remaining_raw_train_groups": 19029,
+    "unused_raw_validation_rows": 10873,
+    "all_remaining_raw_train_rows_assigned_once": true,
+    "test_indices_unique": true
+  },
+  "actual_remaining_train_row_fractions": {
+    "train": 0.8997613548293035,
+    "validation": 0.10023864517069653
+  },
+  "splits": {
+    "train": {
+      "rows": 117256,
+      "answerable": 78151,
+      "unanswerable": 39105,
+      "unique_context_groups": 17126,
+      "unique_ids": 117256,
+      "duplicate_id_extra_rows": 0,
+      "empty_context": 0,
+      "empty_question": 0,
+      "label_mismatches": 0,
+      "context_group_mismatches": 0,
+      "source_split_mismatches": 0,
+      "columns": [
+        "id",
+        "title",
+        "context",
+        "question",
+        "answers",
+        "label",
+        "source_split",
+        "context_group"
+      ],
+      "fingerprint": "93fd74bc09ae5e42"
+    },
+    "validation": {
+      "rows": 13063,
+      "answerable": 8670,
+      "unanswerable": 4393,
+      "unique_context_groups": 1903,
+      "unique_ids": 13063,
+      "duplicate_id_extra_rows": 0,
+      "empty_context": 0,
+      "empty_question": 0,
+      "label_mismatches": 0,
+      "context_group_mismatches": 0,
+      "source_split_mismatches": 0,
+      "columns": [
+        "id",
+        "title",
+        "context",
+        "question",
+        "answers",
+        "label",
+        "source_split",
+        "context_group"
+      ],
+      "fingerprint": "264631b83bcbfd12"
+    },
+    "test": {
+      "rows": 1000,
+      "answerable": 500,
+      "unanswerable": 500,
+      "unique_context_groups": 695,
+      "unique_ids": 1000,
+      "duplicate_id_extra_rows": 0,
+      "empty_context": 0,
+      "empty_question": 0,
+      "label_mismatches": 0,
+      "context_group_mismatches": 0,
+      "source_split_mismatches": 0,
+      "columns": [
+        "id",
+        "title",
+        "context",
+        "question",
+        "answers",
+        "label",
+        "source_split",
+        "context_group"
+      ],
+      "fingerprint": "2b1fb37351e5f1fe"
+    }
+  },
+  "manifest_checksums": {
+    "train": "750259b87f7aa949c00cd3fe8c95816282ac5fcbd834f6ec69037dfbc674c066",
+    "validation": "a68f53f87945632a0bc4be0933a7612d2d05be091ab936602e38dd7adc42fcb4",
+    "test": "1edb4c88a722870c8502847568145c054410fcec901962e033ed8b028c1ac5bb"
+  },
+  "checks": {
+    "passed": true,
+    "intersections": [
+      {
+        "splits": [
+          "train",
+          "validation"
+        ],
+        "shared_ids": 0,
+        "shared_context_groups": 0
+      },
+      {
+        "splits": [
+          "train",
+          "test"
+        ],
+        "shared_ids": 0,
+        "shared_context_groups": 0
+      },
+      {
+        "splits": [
+          "validation",
+          "test"
+        ],
+        "shared_ids": 0,
+        "shared_context_groups": 0
+      }
+    ],
+    "disk_read_successful": true,
+    "all_saved_fields_equal_source_derived_fields": true,
+    "rebuild_same_seed_same_ids_and_order": true,
+    "saved_ids_and_order_match_rebuild": true,
+    "raw_files_unchanged": true,
+    "test_balanced_500_per_class": true
+  }
+}
