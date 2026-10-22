@@ -12,7 +12,5 @@
   "max_length": 512,
   "dataloader_num_workers": 0,
   "logging_steps": 25,
-  "smoke_steps": 8,
-  "smoke_train_rows": 256,
-  "smoke_validation_rows": 128
+  "threshold": 0.5
 }

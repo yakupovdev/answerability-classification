@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import json
 import os
 import platform
@@ -45,16 +46,6 @@ def python_inventory() -> dict:
         located = shutil.which(name)
         if located:
             candidates.add(Path(located))
-    local_appdata = Path(os.environ.get("LOCALAPPDATA", Path.home() / "AppData" / "Local"))
-    candidates.update((local_appdata / "Programs" / "Python").glob("Python*/python.exe"))
-    candidates.update((local_appdata / "Python").glob("*/python.exe"))
-    candidates.add(
-        Path.home() / ".cache" / "codex-runtimes" / "codex-primary-runtime"
-        / "dependencies" / "python" / "python.exe"
-    )
-    if os.name == "nt":
-        candidates.update(Path("C:/").glob("Python*/python.exe"))
-        candidates.update(Path("C:/Program Files").glob("Python*/python.exe"))
     available, skipped = [], []
     for candidate in sorted(candidates, key=str):
         if not candidate.is_file():
@@ -74,11 +65,22 @@ def python_inventory() -> dict:
     return {
         "available": available,
         "skipped_or_unavailable": skipped,
-        "scope": "Current interpreter, base interpreter, PATH and common local installation paths; not a full disk scan.",
+        "scope": "Current interpreter, base interpreter and PATH; not a full disk scan.",
     }
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--report-dir", type=Path,
+                        help="Separate audit directory; defaults to outputs/audits/<UTC>_dataset.")
+    parser.add_argument("--summary-only", action="store_true", help="Do not export source examples.")
+    args = parser.parse_args()
+    report_dir = args.report_dir or OUTPUTS / "audits" / (datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ") + "_dataset")
+    if not report_dir.is_absolute():
+        report_dir = ROOT / report_dir
+    if (report_dir / "dataset_summary.json").exists():
+        print("ERROR: Audit report already exists; choose a new --report-dir. Historical reports are not overwritten.", file=sys.stderr)
+        return 1
     started_at = utc_now()
     try:
         import datasets
@@ -87,11 +89,12 @@ def main() -> int:
         print(f"ERROR: datasets is unavailable: {exc}. Install requirements.txt with this project's .venv Python.", file=sys.stderr)
         return 1
 
-    OUTPUTS.mkdir(parents=True, exist_ok=True)
+    report_dir.mkdir(parents=True, exist_ok=True)
     DATA_PATH.parent.mkdir(parents=True, exist_ok=True)
     provenance_path = DATA_PATH.parent / "squad_v2.provenance.json"
     stage = "loading the dataset"
     try:
+        print(f"DATASET AUDIT: source={SOURCE}; original author splits, not experimental splits.", flush=True)
         roundtrip = {"performed": False, "reason": "Existing local DatasetDict loaded directly."}
         if DATA_PATH.exists():
             mode = "local"
@@ -148,7 +151,7 @@ def main() -> int:
                 empty_context += int(not row["context"].strip())
                 empty_question += int(not row["question"].strip())
                 ids[row["id"]] += 1
-                if selected[answerable] < EXAMPLES_PER_CLASS:
+                if not args.summary_only and selected[answerable] < EXAMPLES_PER_CLASS:
                     examples.append({
                         "split": name,
                         **{key: row[key] for key in ("id", "context", "question", "answers")},
@@ -195,16 +198,17 @@ def main() -> int:
             "save_load_roundtrip": roundtrip,
         }
         # Preserve the first run's actual disk round-trip evidence on local reruns.
-        summary_path = OUTPUTS / "dataset_summary.json"
+        summary_path = report_dir / "dataset_summary.json"
         if mode == "local" and summary_path.exists():
             previous = json.loads(summary_path.read_text(encoding="utf-8"))
             previous_check = previous.get("initial_save_load_roundtrip", previous.get("save_load_roundtrip"))
             if previous_check and previous_check.get("performed"):
                 summary["initial_save_load_roundtrip"] = previous_check
-        write_json(OUTPUTS / "dataset_examples.json", {"source_id": SOURCE, "examples": examples})
+        if not args.summary_only:
+            write_json(report_dir / "dataset_examples.json", {"source_id": SOURCE, "examples": examples})
         write_json(summary_path, summary)
         print(f"ID intersections: {json.dumps(intersections)}", flush=True)
-        print(f"Done. load_mode={mode}; reports: {OUTPUTS}", flush=True)
+        print(f"Done. load_mode={mode}; reports: {report_dir}", flush=True)
         return 0
     except Exception as exc:
         print(

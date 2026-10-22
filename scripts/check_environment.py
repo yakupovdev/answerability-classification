@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import argparse
 import csv
 import ctypes
 import hashlib
@@ -20,7 +21,6 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-REPORT = ROOT / "outputs" / "environment_check.json"
 
 
 def windows_hardware() -> dict:
@@ -185,7 +185,20 @@ def check_torch(libraries: dict) -> dict:
 
 
 def main() -> None:
-    inputs = [ROOT / "README.md", ROOT / "outputs" / "split_summary.json"]
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--report-dir", type=Path, help="Defaults to a new outputs/audits/<UTC>_environment directory.")
+    args = parser.parse_args()
+    report_dir = args.report_dir or ROOT / "outputs" / "audits" / (datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ") + "_environment")
+    if not report_dir.is_absolute():
+        report_dir = ROOT / report_dir
+    report_path = report_dir / "environment_check.json"
+    if report_path.exists():
+        raise ValueError("Environment report already exists; choose a new --report-dir.")
+    inputs = [ROOT / "README.md", ROOT / "configs" / "data_split.json",
+              ROOT / "configs" / "classifier_distilbert.json"]
+    split_summary = ROOT / "outputs" / "split_summary.json"
+    if split_summary.is_file():
+        inputs.append(split_summary)
     input_checksums = {str(path.relative_to(ROOT)): hashlib.sha256(path.read_bytes()).hexdigest() for path in inputs}
     libraries = check_libraries()
     report = {
@@ -200,12 +213,13 @@ def main() -> None:
         "scope": "Hardware and environment inspection only. No dataset opened, no test examples used, no packages installed, no models downloaded or trained.",
     }
     if any(hashlib.sha256(path.read_bytes()).hexdigest() != input_checksums[str(path.relative_to(ROOT))] for path in inputs):
-        raise RuntimeError("README/split summary changed during inspection.")
-    REPORT.parent.mkdir(parents=True, exist_ok=True)
-    temporary = REPORT.with_suffix(".json.tmp")
+        raise RuntimeError("Project configuration/documentation changed during inspection.")
+    report_path.parent.mkdir(parents=True, exist_ok=True)
+    temporary = report_path.with_suffix(".json.tmp")
     temporary.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
-    temporary.replace(REPORT)
+    temporary.replace(report_path)
     print(json.dumps(report, ensure_ascii=False, indent=2))
+    print(f"Environment report: {report_path}")
 
 
 if __name__ == "__main__":

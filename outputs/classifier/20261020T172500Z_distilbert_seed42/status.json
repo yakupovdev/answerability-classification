@@ -1,5 +1,0 @@
-{
-  "status": "discarded",
-  "test_accessed": false,
-  "reason": "Interrupted before first complete epoch: transformers 5.20 incorrectly inferred DistilBERT loss kwargs support, causing missing gradient accumulation normalization. Results are not final; corrected run starts from base."
-}

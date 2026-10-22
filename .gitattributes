@@ -1,4 +1,4 @@
-# Normalize maintained source and documentation; preserve historical artifact bytes.
+# Normalize maintained source, configuration and documentation.
 * text=auto
 *.py text eol=lf
 *.md text eol=lf
@@ -7,4 +7,3 @@
 *.txt text eol=lf
 .gitignore text eol=lf
 .gitattributes text eol=lf
-outputs/** -text whitespace=trailing-space,space-before-tab,cr-at-eol

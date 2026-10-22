@@ -1,0 +1,47 @@
+{
+  "source_id": "rajpurkar/squad_v2",
+  "source_splits": {
+    "train": {
+      "rows": 130319
+    },
+    "validation": {
+      "rows": 11873
+    }
+  },
+  "settings": {
+    "algorithm_version": 1,
+    "seed": 42,
+    "label": "1 if len(answers['text']) > 0 else 0",
+    "context_group": "SHA-256(UTF-8(' '.join(NFC(context).split())))",
+    "unicode_version": "15.0.0",
+    "overlap_policy": "Remove all raw train rows whose group occurs anywhere in raw validation.",
+    "validation_group_fraction": 0.1,
+    "group_split": "Sort remaining groups lexicographically; shuffle using random.Random(42). Take the first max(1, min(n-1, int(n*0.1+0.5))) groups for validation; all others for train. Preserve original row order within each split.",
+    "test_per_class": 500,
+    "test_sampling": "Use a separate random.Random(42). Sample 500 indices without replacement from label=1, then 500 from label=0, in raw validation row order; shuffle the combined indices using that same test RNG.",
+    "manifest_checksum": "SHA-256 of UTF-8 JSON ID array, ensure_ascii=False, separators=(',', ':'); no newline",
+    "classifier_input_fields": [
+      "question",
+      "context"
+    ]
+  },
+  "reference_environment": {
+    "python": "3.12.2",
+    "datasets": "5.1.0",
+    "pyarrow": "26.0.0"
+  },
+  "splits": {
+    "train": {
+      "rows": 117256,
+      "ids_sha256": "750259b87f7aa949c00cd3fe8c95816282ac5fcbd834f6ec69037dfbc674c066"
+    },
+    "validation": {
+      "rows": 13063,
+      "ids_sha256": "a68f53f87945632a0bc4be0933a7612d2d05be091ab936602e38dd7adc42fcb4"
+    },
+    "test": {
+      "rows": 1000,
+      "ids_sha256": "1edb4c88a722870c8502847568145c054410fcec901962e033ed8b028c1ac5bb"
+    }
+  }
+}

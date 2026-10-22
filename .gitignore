@@ -1,44 +1,46 @@
-# Project environment and Python/tool caches
+# Local environment and IDE settings
 .venv/
-__pycache__/
-*.py[cod]
-.cache/
-.pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.ipynb_checkpoints/
-*.egg-info/
 .idea/
+.vscode/
 
-# Downloaded data, provenance and incomplete downloads
-data/raw/*
-!data/raw/.gitkeep
-
-# Experimental splits, staging folders and overwrite backups
-data/processed/
-
-# Temporary files
-*.tmp
-*.temp
-*.swp
-*.swo
-*.bak
-*~
-
-# Model weights, temporary checkpoints and tokenization caches
-models/
+# Generated data, models and results
+/data/raw/
+/data/processed/
+/models/
+/outputs/
+/archive/
 checkpoints/
 checkpoint-*/
-outputs/classifier/**/tokenized/
 *.safetensors
 *.pt
 *.pth
 *.ckpt
 *.bin
 *.onnx
-
-# Large row-level prediction exports, including finalization backups
+*.log
 validation_predictions.jsonl
+
+# Project-local caches and bytecode
+.cache/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+*.egg-info/
+
+# Temporary files and transfer bundles
+*.tmp
+*.temp
+*.swp
+*.swo
+*.bak
+*~
+*.zip
+*.7z
+*.tar
+*.gz
 
 # Local credentials and private key material
 .env

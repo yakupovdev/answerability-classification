@@ -1,6 +1,0 @@
-{
-  "model_id": "distilbert/distilbert-base-uncased",
-  "model_revision": "12040accade4e8a0f71eabdb258fecc2e7e948be",
-  "tokenizer_revision": "12040accade4e8a0f71eabdb258fecc2e7e948be",
-  "snapshot_path": "C:\\Projects\\rmt\\.cache\\huggingface\\hub\\models--distilbert--distilbert-base-uncased\\snapshots\\12040accade4e8a0f71eabdb258fecc2e7e948be"
-}

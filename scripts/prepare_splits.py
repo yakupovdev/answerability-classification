@@ -26,6 +26,7 @@ ROOT = Path(__file__).resolve().parents[1]
 RAW = ROOT / "data" / "raw" / "squad_v2"
 DESTINATION = ROOT / "data" / "processed" / "squad_v2_answerability"
 OUTPUTS = ROOT / "outputs"
+REFERENCE = ROOT / "configs" / "data_split.json"
 SOURCE_ID = "rajpurkar/squad_v2"
 SEED = 42
 SPLITS = ("train", "validation", "test")
@@ -76,6 +77,36 @@ def write_json(path: Path, value: dict) -> None:
 def ordered_ids_checksum(ids: list[str]) -> str:
     encoded = json.dumps(ids, ensure_ascii=False, separators=(",", ":")).encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
+
+
+def load_reference() -> dict:
+    require(REFERENCE.is_file(), "Missing configs/data_split.json; restore the committed split reference.")
+    reference = read_json(REFERENCE)
+    require(reference["source_id"] == SOURCE_ID, "Split reference uses a different dataset source.")
+    for key, value in SETTINGS.items():
+        require(reference["settings"].get(key) == value,
+                f"Split protocol mismatch in {key}: expected {reference['settings'].get(key)!r}, got {value!r}. "
+                "Use the recorded protocol/Python Unicode version; the reference is never updated automatically.")
+    require(set(reference["splits"]) == set(SPLITS), "Split reference must contain train, validation and test.")
+    return reference
+
+
+def verify_reference(statistics: dict, manifest: dict, source: dict, reference: dict) -> None:
+    for name, expected in reference["source_splits"].items():
+        require(source["splits"][name]["rows"] == expected["rows"],
+                f"Original {name} size differs from configs/data_split.json: "
+                f"expected {expected['rows']}, got {source['splits'][name]['rows']}. "
+                "Check the dataset source/version; reference unchanged.")
+    for name in SPLITS:
+        expected = reference["splits"][name]
+        actual_rows = statistics[name]["rows"]
+        actual_hash = manifest["splits"][name]["ids_sha256"]
+        require(actual_rows == expected["rows"] and actual_hash == expected["ids_sha256"],
+                f"Reference mismatch in {name}: rows expected={expected['rows']}, actual={actual_rows}; "
+                f"ordered ID SHA-256 expected={expected['ids_sha256']}, actual={actual_hash}. "
+                "Check source row order/content, grouping, split seed and library versions. "
+                f"Reference environment: {reference['reference_environment']}. "
+                "No dataset published and configs/data_split.json was not modified.")
 
 
 def context_group(context: str) -> str:
@@ -235,8 +266,13 @@ def verify_equal(actual: DatasetDict, expected: DatasetDict) -> None:
                 f"Saved values differ from the source-derived data in {name}.")
 
 
-def prepare(overwrite: bool) -> dict:
+def prepare(overwrite: bool, check_only: bool = False, report_dir: Path | None = None) -> dict:
     disable_progress_bars()
+    reference = load_reference()
+    require(not (check_only and overwrite), "--check-only cannot be combined with --overwrite.")
+    if check_only:
+        require(DESTINATION.is_dir(), "Missing processed data; --check-only never creates splits.")
+        print("SPLIT AUDIT: existing experimental splits; split seed=42; integrity checks only.", flush=True)
     require(RAW.is_dir(), "Missing data/raw/squad_v2. Restore the local raw dataset; no download is attempted.")
     print("Loading local raw DatasetDict; test content will not be printed.", flush=True)
     raw_checksums = raw_file_checksums()
@@ -252,7 +288,8 @@ def prepare(overwrite: bool) -> dict:
             for name, split in raw.items()
         },
     }
-    identity = {"source": source, "settings": SETTINGS, "versions": versions}
+    identity = {"source": source, "settings": SETTINGS, "versions": versions,
+                "reference_sha256": hashlib.sha256(REFERENCE.read_bytes()).hexdigest()}
     metadata_path = DESTINATION / METADATA_NAME
     summary_path, manifest_path = OUTPUTS / "split_summary.json", OUTPUTS / "split_manifest.json"
     existing_metadata = None
@@ -274,9 +311,11 @@ def prepare(overwrite: bool) -> dict:
     expected = materialize(enriched, plan)
     expected_stats, _ = audit(expected)
     expected_manifest = make_manifest(expected)
+    verify_reference(expected_stats, expected_manifest, source, reference)
     checksums = {name: item["ids_sha256"] for name, item in expected_manifest["splits"].items()}
 
     mode = "reuse" if existing_metadata is not None else ("overwrite" if overwrite else "create")
+    require(not check_only or mode == "reuse", "--check-only requires existing matching preparation metadata.")
     staging = None
     if mode == "reuse":
         require(existing_metadata["manifest_checksums"] == checksums,
@@ -300,6 +339,7 @@ def prepare(overwrite: bool) -> dict:
 
     verify_equal(loaded, expected)
     statistics, validation = audit(loaded)
+    verify_reference(statistics, make_manifest(loaded), source, reference)
     require(make_manifest(loaded) == expected_manifest, "Saved manifest differs from deterministic rebuild.")
     # Stats include library fingerprints; compare all substantive fields to the new build.
     for name in SPLITS:
@@ -329,6 +369,7 @@ def prepare(overwrite: bool) -> dict:
             "saved_ids_and_order_match_rebuild": True,
             "raw_files_unchanged": True,
             "test_balanced_500_per_class": True,
+            "matches_reference_config": True,
         },
     }
     if staging is not None:
@@ -355,23 +396,43 @@ def prepare(overwrite: bool) -> dict:
             summary["previous_dataset_backup"] = str(backup)
             print(f"Previous processed data retained at {backup}", flush=True)
 
-    OUTPUTS.mkdir(parents=True, exist_ok=True)
-    write_json(manifest_path, expected_manifest)
-    write_json(summary_path, summary)
+    if check_only:
+        if report_dir is not None:
+            report_dir.mkdir(parents=True, exist_ok=True)
+            write_json(report_dir / "split_summary.json", summary)
+        print("Check-only: datasets, original metadata and historical reports were not written.", flush=True)
+    else:
+        OUTPUTS.mkdir(parents=True, exist_ok=True)
+        write_json(manifest_path, expected_manifest)
+        write_json(summary_path, summary)
     print(f"Complete: mode={mode}; raw files unchanged; all checks passed.", flush=True)
+    print("Split sizes and ordered ID SHA-256 match configs/data_split.json; reference unchanged.", flush=True)
     for name, stats in statistics.items():
         print(f"{name}: rows={stats['rows']}, answerable={stats['answerable']}, "
               f"unanswerable={stats['unanswerable']}, context_groups={stats['unique_context_groups']}", flush=True)
     print(f"Excluded raw train: {allocation['excluded_train_rows']} rows / {allocation['excluded_train_groups']} groups.", flush=True)
+    for intersection in validation["intersections"]:
+        print(f"{' / '.join(intersection['splits'])}: shared_ids={intersection['shared_ids']}, "
+              f"shared_context_groups={intersection['shared_context_groups']}", flush=True)
     return summary
 
 
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--overwrite", action="store_true", help="Intentionally recreate processed splits/reports; keep the previous dataset as a backup.")
+    parser.add_argument("--check-only", action="store_true", help="Require reuse; never write datasets or historical reports.")
+    parser.add_argument("--report-dir", type=Path, help="Separate output directory for a check-only summary.")
     args = parser.parse_args()
     try:
-        prepare(args.overwrite)
+        require(args.report_dir is None or args.check_only, "--report-dir requires --check-only.")
+        report_dir = args.report_dir
+        if args.check_only and report_dir is None:
+            report_dir = OUTPUTS / "audits" / (datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%S%fZ") + "_splits")
+        if report_dir is not None and not report_dir.is_absolute():
+            report_dir = ROOT / report_dir
+        require(report_dir is None or report_dir.resolve() != OUTPUTS.resolve(), "Choose a separate audit report directory.")
+        require(report_dir is None or not (report_dir / "split_summary.json").exists(), "Audit report already exists; choose a new --report-dir.")
+        prepare(args.overwrite, args.check_only, report_dir)
         return 0
     except Exception as exc:
         # Avoid including source rows or third-party exception text that could expose test content.
