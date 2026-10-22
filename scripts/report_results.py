@@ -149,16 +149,20 @@ def completed_run(directory):
     info = read_metadata(directory)
     if info["status"] != "completed" or info.get("purpose") != "full":
         raise ValueError("not a completed full experiment; smoke and interrupted runs are excluded")
-    if not info.get("export", {}).get("passed") or info.get("training", {}).get("completed_epochs", 0) < 2:
-        raise ValueError("two-epoch training/export verification is incomplete")
+    requested_epochs = info["config"]["epochs"]
+    if not isinstance(requested_epochs, int) or requested_epochs < 1:
+        raise ValueError("run configuration must specify a positive integer epoch count")
+    if not info.get("export", {}).get("passed") or info.get("training", {}).get("completed_epochs", 0) < requested_epochs:
+        raise ValueError(f"training/export verification is incomplete: expected {requested_epochs} epochs")
     initial = read_json(directory / "initial_validation_metrics.json")
     epochs = read_epochs(directory)
     final = read_json(directory / "validation_metrics.json")
     check = info.get("initial_weights_check", {})
     if not check.get("unchanged") or check.get("optimizer_steps", initial.get("optimizer_steps")) != 0:
         raise ValueError("initial evaluation must demonstrate unchanged weights before the first optimizer step")
-    if len(epochs) != 2 or [report.get("epoch") for report in epochs] != [1, 2]:
-        raise ValueError("expected saved evaluation after epochs 1 and 2")
+    expected_epochs = list(range(1, requested_epochs + 1))
+    if [report.get("epoch") for report in epochs] != expected_epochs:
+        raise ValueError(f"expected saved evaluation after epochs {expected_epochs}")
     if info["training"]["effective_batch_size"] != 16:
         raise ValueError("actual effective batch differs from 16")
     if abs(max(report["model"]["macro_f1"] for report in epochs) - final["model"]["macro_f1"]) > 1e-10:

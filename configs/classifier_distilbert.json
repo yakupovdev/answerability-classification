@@ -2,7 +2,7 @@
   "model_id": "distilbert/distilbert-base-uncased",
   "revision": "12040accade4e8a0f71eabdb258fecc2e7e948be",
   "seed": 42,
-  "epochs": 2,
+  "epochs": 3,
   "learning_rate": 0.00002,
   "weight_decay": 0.01,
   "warmup_ratio": 0.1,

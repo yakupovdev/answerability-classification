@@ -88,7 +88,7 @@ revision `12040accade4e8a0f71eabdb258fecc2e7e948be`.
 Кеш находится внутри проекта. Для работы без сети с уже заполненным кешем
 добавьте `--local-files-only`. Существующий run/model не перезаписывается.
 
-Протокол: 2 эпохи, learning rate=2e-5, weight decay=0.01, warmup=10%,
+Протокол: 3 эпохи, learning rate=2e-5, weight decay=0.01, warmup=10%,
 train batch=8, gradient accumulation=2, eval batch=8, max_length=512,
 workers=0, unweighted cross-entropy, threshold=0.5. BF16 используется при
 успешной GPU-проверке; фактические параметры записываются в `run.json`.
@@ -122,6 +122,7 @@ matrix и always-answerable baseline. Прогнозы, настоящие ош�
 `stdout.log` и `stderr.log`. Просмотр отчётов не запускает обучение.
 
 Планируемые training seeds — **42, 43, 44**, split seed всегда **42**.
+Каждый из трёх запусков использует `epochs=3` из общей конфигурации.
 Повторите команду обучения для 43 и 44 с новыми run_id, последовательно.
 Затем передайте три фактических каталога:
 
@@ -129,7 +130,7 @@ matrix и always-answerable baseline. Прогнозы, настоящие ош�
 & '.\.venv\Scripts\python.exe' scripts/report_results.py compare --runs "outputs/classifier/$run42" "outputs/classifier/$run43" "outputs/classifier/$run44"
 ```
 
-Сравнение показывает initial / epoch 1 / epoch 2 / best для каждого seed,
+Сравнение показывает initial / epoch 1 / epoch 2 / epoch 3 / best для каждого seed,
 mean и **sample standard deviation, n=3**, и изменения относительно initial.
 Учитываются только завершённые совместимые полные запуски. Матрицы ошибок
 не суммируются: все прогоны используют одну validation, а SD между seeds

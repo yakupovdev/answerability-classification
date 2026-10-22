@@ -612,7 +612,7 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--config", type=Path, default=ROOT / "configs" / "classifier_distilbert.json")
     parser.add_argument("--run-id", help="UTC timestamp followed by model name and seed, e.g. 20261023T120000Z_distilbert_seed42")
-    parser.add_argument("--smoke", action="store_true", help="Two epochs on 32 train and 32 validation rows; not a full experiment.")
+    parser.add_argument("--smoke", action="store_true", help="Configured epochs on 32 train and 32 validation rows; not a full experiment.")
     parser.add_argument("--local-files-only", action="store_true", help="Require the pinned base model in the project cache; otherwise it may be downloaded on first training.")
     parser.add_argument("--worker", action="store_true", help=argparse.SUPPRESS)
     args = parser.parse_args()
@@ -639,8 +639,8 @@ def main():
         config = read_json(config_path)
         config["seed"] = args.seed
         require(config["model_id"] == "distilbert/distilbert-base-uncased" and config["revision"] == "12040accade4e8a0f71eabdb258fecc2e7e948be", "Use the fixed base checkpoint/revision.")
-        require(config["epochs"] == 2 and config["max_length"] == 512 and config["dataloader_num_workers"] == 0 and config["threshold"] == 0.5,
-                "This protocol requires 2 epochs, max_length=512, workers=0 and threshold=0.5.")
+        require(config["epochs"] == 3 and config["max_length"] == 512 and config["dataloader_num_workers"] == 0 and config["threshold"] == 0.5,
+                "This protocol requires 3 epochs, max_length=512, workers=0 and threshold=0.5.")
         require(config["train_batch_size"] in (1, 2, 4, 8, 16) and config["train_batch_size"] * config["gradient_accumulation_steps"] == 16,
                 "Train batch * accumulation must equal 16.")
         require((PROCESSED / "train").is_dir() and (PROCESSED / "validation").is_dir()
