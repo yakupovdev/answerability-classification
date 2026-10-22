@@ -1,149 +1,274 @@
 # Answerability classification
 
-Бинарный классификатор определяет по **question + context**, достаточно ли
-предоставленного текста для ответа. `1` — answerable, `0` — unanswerable.
-DistilBERT дообучается для этой задачи; генеративная LLM не используется.
+A binary classifier takes **question + context** and predicts whether the
+provided text contains enough information to answer: `1` means answerable,
+`0` means unanswerable. DistilBERT is fine-tuned for this task; the current
+pipeline does not use a generative LLM.
 
-## Структура
+## Project structure
 
 ```text
 configs/
-  classifier_distilbert.json  # модель и гиперпараметры
-  data_split.json             # алгоритм и эталон размеров/ID SHA-256
+  classifier_distilbert.json  # model and training hyperparameters
+  data_split.json             # split algorithm, reference sizes and ID SHA-256 hashes
 scripts/
-  check_environment.py
-  download_dataset.py
-  prepare_splits.py
-  train_classifier.py
-  report_results.py
-data/raw/                     # исходный SQuAD 2.0
-data/processed/              # наши train/validation/test
-models/                       # сохранённые модели
-outputs/                      # отчёты, прогнозы и логи
+  check_environment.py        # Windows hardware, library and CUDA diagnostics
+  download_dataset.py         # download/reuse and audit the source dataset
+  prepare_splits.py           # create or verify the fixed experimental splits
+  train_classifier.py         # train, evaluate, export and verify a classifier
+  report_results.py           # inspect reports/errors and compare training seeds
+data/raw/                     # original SQuAD 2.0
+data/processed/               # experimental train/validation/test
+models/                       # saved models
+outputs/                      # reports, predictions and logs
 requirements.txt
 ```
 
-Рабочие папки создаются автоматически. Данные, модели, outputs, кеш `.cache/`,
-окружение `.venv/` и секреты исключены из Git. В репозиторий входят исходники,
-конфигурации, зависимости и документация.
+Working directories are created automatically. Data, models, outputs, the
+`.cache/` cache, the `.venv/` environment and secrets are excluded from Git.
+The repository tracks source code, configurations, dependencies and documentation.
 
-## Установка: Windows / PowerShell
+## Installation
 
-Нужны Python 3.12 и совместимая NVIDIA GPU для обучения. Команды выполняются
-из корня репозитория, без активации окружения и изменения Execution Policy.
-Если `.venv` уже существует, создавать её заново не нужно.
+Use Python 3.12 and a compatible NVIDIA GPU for training. Run commands from the
+repository root. Virtual environment activation and PowerShell Execution Policy
+changes are unnecessary. Skip environment creation if `.venv` already exists.
+Create a separate environment on each OS; a Windows environment cannot be
+reused on Linux.
+
+### Windows / PowerShell
 
 ```powershell
-# Только для нового окружения; Python Launcher должен быть установлен:
+# New environment only; requires the Python Launcher:
 py -3.12 -m venv .venv
 & '.\.venv\Scripts\python.exe' -m pip install 'torch==2.11.0+cu128' --index-url https://download.pytorch.org/whl/cu128
 & '.\.venv\Scripts\python.exe' -m pip install -r requirements.txt
 ```
 
-## Подготовка данных
+### Linux / Bash
+
+Python 3.12 must include `venv` support.
+
+```bash
+# New environment only:
+python3.12 -m venv .venv
+./.venv/bin/python -m pip install 'torch==2.11.0+cu128' --index-url https://download.pytorch.org/whl/cu128
+./.venv/bin/python -m pip install -r requirements.txt
+```
+
+Dependency versions remain pinned in `requirements.txt`. The Linux commands
+have not been executed on Linux as part of this documentation update.
+
+## Environment check
+
+### Windows / PowerShell
 
 ```powershell
 & '.\.venv\Scripts\python.exe' scripts/check_environment.py
+```
+
+This writes `environment_check.json` to a new directory under `outputs/audits/`.
+
+### Linux / Bash
+
+`check_environment.py` currently uses Windows registry and memory APIs and
+cannot run on Linux. Use these terminal checks instead; they do not create
+the Windows script's JSON report:
+
+```bash
+lscpu
+free -h
+if command -v nvidia-smi >/dev/null 2>&1; then
+  nvidia-smi
+else
+  echo 'nvidia-smi is not on PATH.'
+fi
+./.venv/bin/python - <<'PY'
+import platform
+from importlib.metadata import PackageNotFoundError, version
+
+print('Python:', platform.python_version())
+for name in ('torch', 'transformers', 'scikit-learn', 'accelerate'):
+    try:
+        print(name + ':', version(name))
+    except PackageNotFoundError:
+        print(name + ': not installed')
+
+try:
+    import torch
+except ImportError as exc:
+    print('PyTorch import failed:', exc)
+else:
+    print('PyTorch CUDA build:', torch.version.cuda)
+    print('CUDA available:', torch.cuda.is_available())
+    if torch.cuda.is_available():
+        print('GPU:', torch.cuda.get_device_name(0))
+        x = torch.ones((64, 64), device='cuda')
+        result = x @ x
+        torch.cuda.synchronize()
+        assert bool((result == 64).all().item()), 'GPU tensor check failed'
+        print('GPU tensor check: passed')
+PY
+```
+
+The CUDA version shown by `nvidia-smi` describes driver compatibility. It does
+not prove that CUDA Toolkit is installed or that PyTorch can access the GPU.
+
+## Data preparation
+
+### Windows / PowerShell
+
+```powershell
 & '.\.venv\Scripts\python.exe' -u scripts/download_dataset.py --summary-only
 & '.\.venv\Scripts\python.exe' -u scripts/prepare_splits.py
 ```
 
-Скрипт загрузки скачивает [SQuAD 2.0](https://huggingface.co/datasets/rajpurkar/squad_v2)
-только при отсутствии `data/raw/squad_v2/`; затем использует локальную копию.
-Аудит печатает размеры, классы, пустые входы и дубликаты. Проверка окружения
-различает совместимость CUDA у драйвера и фактическую доступность CUDA в PyTorch.
+### Linux / Bash
 
-Исходные train/validation авторов отличаются от наших экспериментальных частей.
-Наши train и validation создаются из исходного train по группам контекстов;
-test — 500 answerable + 500 unanswerable из исходного validation.
+```bash
+./.venv/bin/python -u scripts/download_dataset.py --summary-only
+./.venv/bin/python -u scripts/prepare_splits.py
+```
+
+The download script fetches [SQuAD 2.0](https://huggingface.co/datasets/rajpurkar/squad_v2)
+only if `data/raw/squad_v2/` is missing, then reuses the local copy. The audit
+reports split sizes, class counts, empty inputs and duplicate IDs.
+
+The dataset authors' original train/validation splits differ from our
+experimental splits. Our train and validation are derived from the original
+train by context groups; test contains 500 answerable and 500 unanswerable
+examples sampled from the original validation.
 `context_group = SHA-256(UTF-8(' '.join(NFC(context).split())))`.
-Группы сортируются и перемешиваются с **split seed=42**; около 10% групп
-отводится validation. Пересекающиеся с исходным validation группы исключаются
-из исходного train. Порядок строк внутри наших train/validation сохраняется.
-Полный алгоритм случайного отбора test записан в `configs/data_split.json`.
+Groups are sorted and shuffled with **split seed=42**; approximately 10% of
+groups are assigned to validation. Groups overlapping the original validation
+are excluded from the original train. Row order within our train/validation
+is preserved. The complete test sampling algorithm is recorded in
+`configs/data_split.json`.
 
-Этот файл содержит эталонные размеры и SHA-256 **упорядоченных** списков ID.
-При подготовке и повторной проверке они сравниваются с фактическим результатом
-до публикации данных. При расхождении скрипт сообщает ожидаемые/фактические
-значения и возможные причины, завершается с ошибкой и не обновляет эталон.
-При совпадении создаются `outputs/split_summary.json`, `outputs/split_manifest.json`
-и `data/processed/squad_v2_answerability/`.
+That configuration contains reference sizes and SHA-256 hashes of **ordered**
+ID lists. During preparation and verification, actual results are checked
+against these references before saving the prepared dataset. A mismatch
+reports expected/actual values and possible causes, stops with an error and
+does not update the reference automatically. Matching results are saved as
+`outputs/split_summary.json`, `outputs/split_manifest.json` and
+`data/processed/squad_v2_answerability/`.
 
-Для проверки уже подготовленных выборок без изменения данных и manifest:
+To verify existing splits without modifying the data or manifest:
 
 ```powershell
 & '.\.venv\Scripts\python.exe' -u scripts/prepare_splits.py --check-only
 ```
 
-## Обучение
+```bash
+./.venv/bin/python -u scripts/prepare_splits.py --check-only
+```
+
+## Training
+
+The planned training seeds are **42, 43 and 44**; the split seed always remains
+**42**. All three runs use `epochs=3` from the shared configuration. Run them
+sequentially. The commands assign run IDs for later report viewing and
+comparison; keep the variables in the same shell session, or replace them
+later with the actual saved directory names.
+
+### Windows / PowerShell
 
 ```powershell
 $run42 = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssfffZ') + '_distilbert_seed42'
 & '.\.venv\Scripts\python.exe' -u scripts/train_classifier.py --seed 42 --run-id $run42
+
+$run43 = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssfffZ') + '_distilbert_seed43'
+& '.\.venv\Scripts\python.exe' -u scripts/train_classifier.py --seed 43 --run-id $run43
+
+$run44 = (Get-Date).ToUniversalTime().ToString('yyyyMMddTHHmmssfffZ') + '_distilbert_seed44'
+& '.\.venv\Scripts\python.exe' -u scripts/train_classifier.py --seed 44 --run-id $run44
 ```
 
-При первом запуске скачивается только фиксированный checkpoint
+### Linux / Bash
+
+```bash
+run42="$(date -u +%Y%m%dT%H%M%SZ)_distilbert_seed42"
+./.venv/bin/python -u scripts/train_classifier.py --seed 42 --run-id "$run42"
+
+run43="$(date -u +%Y%m%dT%H%M%SZ)_distilbert_seed43"
+./.venv/bin/python -u scripts/train_classifier.py --seed 43 --run-id "$run43"
+
+run44="$(date -u +%Y%m%dT%H%M%SZ)_distilbert_seed44"
+./.venv/bin/python -u scripts/train_classifier.py --seed 44 --run-id "$run44"
+```
+
+The first run downloads the pinned base checkpoint
 [distilbert/distilbert-base-uncased](https://huggingface.co/distilbert/distilbert-base-uncased/tree/12040accade4e8a0f71eabdb258fecc2e7e948be),
 revision `12040accade4e8a0f71eabdb258fecc2e7e948be`.
-Кеш находится внутри проекта. Для работы без сети с уже заполненным кешем
-добавьте `--local-files-only`. Существующий run/model не перезаписывается.
+The cache is local to the project. Add `--local-files-only` to use an already
+populated cache offline. Existing run/model directories are never overwritten.
 
-Протокол: 3 эпохи, learning rate=2e-5, weight decay=0.01, warmup=10%,
+Protocol: 3 epochs, learning rate=2e-5, weight decay=0.01, warmup=10%,
 train batch=8, gradient accumulation=2, eval batch=8, max_length=512,
-workers=0, unweighted cross-entropy, threshold=0.5. BF16 используется при
-успешной GPU-проверке; фактические параметры записываются в `run.json`.
-При OOM batch уменьшается с сохранением effective batch=16, попытка начинается
-из свежей seeded инициализации; прерванная попытка не считается результатом.
+workers=0, unweighted cross-entropy, threshold=0.5. BF16 is used when the GPU
+probe succeeds; actual settings are recorded in `run.json`. On OOM, the batch
+size is reduced while keeping effective batch=16, and the attempt restarts
+from a fresh seeded initialization. An interrupted attempt is not a result.
 
-До первого optimizer step оценивается вся validation:
+The entire validation split is evaluated before the first optimizer step:
 
 > pretrained encoder with randomly initialized classification head, before task fine-tuning.
 
-Проверяются неизменность весов и нулевой global step. Перед обучением той же
-модели восстанавливается RNG и устанавливается seed. После каждой эпохи
-оценивается validation; лучший checkpoint выбирается по macro-F1.
-Модель и tokenizer сохраняются в `models/classifier/<run_id>/` и проверяются
-после повторной загрузки в FP32 на validation. Во вход передаются только
-question/context; answers используются для метки и диагностики, labels — для loss.
+The pipeline checks unchanged weights and a zero global step. Before training
+the same model, RNG state is restored and the seed is set. Validation is
+evaluated after every epoch; the best checkpoint is selected by macro-F1.
+The model and tokenizer are saved under `models/classifier/<run_id>/` and
+verified after reloading in FP32 on validation. Only question/context enter
+the model; answers support label derivation and diagnostics, and labels
+are used to compute the loss.
 
-## Результаты и сравнение seed
+## Results and seed comparison
+
+### Windows / PowerShell
 
 ```powershell
 & '.\.venv\Scripts\python.exe' scripts/report_results.py show --run "outputs/classifier/$run42"
 & '.\.venv\Scripts\python.exe' scripts/report_results.py error --run "outputs/classifier/$run42" --index 0
-```
-
-В `outputs/classifier/<run_id>/`: `run.json` содержит конфигурацию, версии,
-revision, идентичность данных, проверки и статус; `initial_validation_metrics.json`
-— начальную оценку; `epoch_metrics.jsonl` — метрики эпох; `history.jsonl` — loss,
-шаги и learning rate; `validation_metrics.json` — итоговые метрики, confusion
-matrix и always-answerable baseline. Прогнозы, настоящие ошибки и вывод
-сохраняются в `validation_predictions.jsonl`, `validation_errors.json`,
-`stdout.log` и `stderr.log`. Просмотр отчётов не запускает обучение.
-
-Планируемые training seeds — **42, 43, 44**, split seed всегда **42**.
-Каждый из трёх запусков использует `epochs=3` из общей конфигурации.
-Повторите команду обучения для 43 и 44 с новыми run_id, последовательно.
-Затем передайте три фактических каталога:
-
-```powershell
 & '.\.venv\Scripts\python.exe' scripts/report_results.py compare --runs "outputs/classifier/$run42" "outputs/classifier/$run43" "outputs/classifier/$run44"
 ```
 
-Сравнение показывает initial / epoch 1 / epoch 2 / epoch 3 / best для каждого seed,
-mean и **sample standard deviation, n=3**, и изменения относительно initial.
-Учитываются только завершённые совместимые полные запуски. Матрицы ошибок
-не суммируются: все прогоны используют одну validation, а SD между seeds
-не является доверительным интервалом.
+### Linux / Bash
 
-## Ограничения
+```bash
+./.venv/bin/python scripts/report_results.py show --run "outputs/classifier/$run42"
+./.venv/bin/python scripts/report_results.py error --run "outputs/classifier/$run42" --index 0
+./.venv/bin/python scripts/report_results.py compare --runs "outputs/classifier/$run42" "outputs/classifier/$run43" "outputs/classifier/$run44"
+```
 
-- Test предназначен только для итоговой оценки после фиксации протокола;
-  обучение, настройка и просмотр ошибок используют только train/validation.
-- Разделение по одинаковым контекстам не гарантирует разделения по статьям/темам.
-- Context обрезается до лимита 512 токенов пары, иногда скрывая правильный ответ;
-  исходная метка не меняется. Диагностика сохраняется в run.json.
-- Validation участвует в выборе checkpoint, поэтому это development evaluation,
-  а не независимая итоговая оценка. Вероятности не проверены на калибровку.
-- Фиксированные версии и seeds не гарантируют побитовую идентичность вычислений
-  на другом оборудовании; контроль состава выборок выполняется отдельно.
+Each `outputs/classifier/<run_id>/` contains:
+
+- `run.json`: configuration, versions, revision, data identity, checks and status.
+- `initial_validation_metrics.json`: evaluation before task fine-tuning.
+- `epoch_metrics.jsonl`: validation metrics after each epoch.
+- `history.jsonl`: loss, steps and learning rate.
+- `validation_metrics.json`: final metrics, confusion matrix and an
+  always-answerable baseline.
+- `validation_predictions.jsonl` and `validation_errors.json`: predictions
+  and actual misclassified validation examples.
+- `stdout.log` and `stderr.log`: captured process output.
+
+Report viewing does not start training. Comparison requires three completed,
+compatible full runs and shows initial / epoch 1 / epoch 2 / epoch 3 / best
+for each seed, the mean and **sample standard deviation, n=3**, and changes
+from initial evaluation. Confusion matrices are not pooled: all runs share
+the same validation examples. Variation across seeds is not a confidence
+interval. Comparison reports are saved under `outputs/comparisons/`.
+
+## Limitations
+
+- Test is reserved for final evaluation after fixing the protocol. Training,
+  tuning and error inspection use train/validation only.
+- Grouping identical normalized contexts does not guarantee separation
+  by article or topic.
+- Context is truncated to the pair's 512-token limit, which can hide a gold
+  answer. The original label is retained; diagnostics are saved in `run.json`.
+- Validation is used for checkpoint selection, so its metrics describe
+  development evaluation rather than an independent final evaluation.
+  Probability calibration has not been assessed.
+- Pinned versions and seeds do not guarantee bitwise-identical computation
+  on different hardware. Split membership is verified separately.
